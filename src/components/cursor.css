@@ -1,0 +1,131 @@
+/* ==========================================================================
+   Butterfly cursor + glow
+   Both elements are positioned from JS (see Butterfly.jsx); this file only
+   handles how they look and animate.
+   ========================================================================== */
+
+/* The native pointer is hidden only once the butterfly is on screen */
+html.butterfly-on,
+html.butterfly-on * {
+  cursor: none !important;
+}
+
+.cursor-glow,
+.butterfly {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  will-change: transform;
+}
+
+html.butterfly-on:not(.butterfly-away) .cursor-glow,
+html.butterfly-on:not(.butterfly-away) .butterfly {
+  opacity: 1;
+}
+
+/* Soft light that brightens everything under the butterfly. "screen" blending
+   adds light to what is already there instead of painting over it. */
+.cursor-glow {
+  z-index: 1999;
+  width: 480px;
+  height: 480px;
+  margin: -240px 0 0 -240px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(248, 244, 233, 0.55) 0%,
+    rgba(246, 219, 192, 0.4) 16%,
+    rgba(147, 80, 115, 0.3) 38%,
+    rgba(147, 80, 115, 0.1) 60%,
+    transparent 74%
+  );
+  mix-blend-mode: screen;
+}
+
+.butterfly {
+  z-index: 2000;
+  width: 56px;
+  height: 56px;
+  margin: -28px 0 0 -28px;
+}
+
+/* Gentle hover while the butterfly is resting */
+.butterfly-float {
+  width: 100%;
+  height: 100%;
+  animation: butterfly-float 2.8s ease-in-out infinite;
+}
+
+.butterfly svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 2px rgba(248, 244, 233, 0.9)) drop-shadow(0 0 9px rgba(246, 219, 192, 0.75))
+    drop-shadow(0 0 22px rgba(147, 80, 115, 0.95));
+}
+
+.wing {
+  transform-box: fill-box;
+  animation: wing-flap var(--flap-speed, 0.5s) ease-in-out infinite alternate;
+}
+
+.wing-left {
+  transform-origin: 100% 50%;
+}
+
+.wing-right {
+  transform-origin: 0% 50%;
+}
+
+/* Faster wingbeats while it is travelling */
+.butterfly[data-moving='true'] {
+  --flap-speed: 0.17s;
+}
+
+.wing-spot {
+  fill: #f8f4e9;
+  opacity: 0.85;
+}
+
+.butterfly-antennae {
+  fill: none;
+  stroke: #f6dbc0;
+  stroke-width: 1.3;
+  stroke-linecap: round;
+}
+
+.wing path {
+  stroke: rgba(248, 244, 233, 0.9);
+  stroke-width: 0.9;
+  stroke-linejoin: round;
+}
+
+@keyframes wing-flap {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0.22);
+  }
+}
+
+@keyframes butterfly-float {
+  0%,
+  100% {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(3px) rotate(3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wing,
+  .butterfly-float {
+    animation: none;
+  }
+}
